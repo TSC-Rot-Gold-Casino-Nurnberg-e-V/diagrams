@@ -8,7 +8,6 @@ sequenceDiagram
     participant CMS (Strapi)
     participant DB (PostgeSQL)
     participant Frontend (NextJS)
-    participant File Hosting (Vercel)
     actor User
     Content Admin->>CMS (Strapi): create new content
     activate CMS (Strapi)
@@ -16,17 +15,18 @@ sequenceDiagram
     activate DB (PostgeSQL)
     DB (PostgeSQL)-->>CMS (Strapi): data saved
     deactivate DB (PostgeSQL)
+    deactivate CMS (Strapi)
     Content Admin->>CMS (Strapi): publish new content
+    activate CMS (Strapi)
     CMS (Strapi)->>Frontend (NextJS): trigger build process (via webhook)
     activate Frontend (NextJS)
-    Frontend (NextJS)->>CMS (Strapi): fetches new content
+    Frontend (NextJS)->>CMS (Strapi): fetch new content
     CMS (Strapi)-->>Frontend (NextJS): return new content
     deactivate CMS (Strapi)
-    Frontend (NextJS)->>Frontend (NextJS): generates new static html file
-    Frontend (NextJS)->>File Hosting (Vercel): deploy generated static html file
+    Frontend (NextJS)->>Frontend (NextJS): generate new static html file (SSG)
     deactivate Frontend (NextJS)
-    activate File Hosting (Vercel)
-    User->>File Hosting (Vercel): request new content
-    File Hosting (Vercel)-->>User: return html file with new content
-    deactivate File Hosting (Vercel)
+    User->>Frontend (NextJS): request new content
+    activate Frontend (NextJS)
+    Frontend (NextJS)-->>User: return html file with new content
+    deactivate Frontend (NextJS)
 ```
